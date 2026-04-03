@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eleton Resto & Grill — Carta</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #2d5a3d;
+    --verde-claro: #4a7c59;
+    --crema: #f7f3ee;
+    --crema-oscura: #ede8e0;
+    --texto: #1a1a16;
+    --texto-suave: #5a5a50;
+    --acento: #8b6914;
+    --blanco: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--crema);
+    color: var(--texto);
+    font-weight: 300;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--verde);
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: max-content;
+    padding: 0 1.5rem;
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    padding: 1rem 1.5rem 1rem 0;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    margin-right: 1rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  .nav-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.75);
+    font-family: 'Jost', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  .nav-btn.active { color: #fff; }
+  .nav-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1.1rem;
+    right: 1.1rem;
+    height: 2px;
+    background: rgba(255,255,255,0.6);
+  }
+
+  /* HERO */
+  .hero {
+    padding: 7rem 2rem 5rem;
+    text-align: center;
+    background: var(--verde);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.015) 40px,
+      rgba(255,255,255,0.015) 80px
+    );
+  }
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 8vw, 5.5rem);
+    color: #fff;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.65);
+  }
+  .hero-sub {
+    margin-top: 1.2rem;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .hero-divider {
+    width: 40px;
+    height: 1px;
+    background: rgba(255,255,255,0.3);
+    margin: 2rem auto 0;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 5rem 2rem;
+    max-width: 760px;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  section.visible { opacity: 1; transform: translateY(0); }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--crema-oscura);
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--verde-claro);
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--verde);
+    font-weight: 400;
+    margin-bottom: 2.5rem;
+    line-height: 1.1;
+  }
+
+  /* ITEM */
+  .item {
+    padding: 1.35rem 0;
+    border-bottom: 1px solid var(--crema-oscura);
+  }
+  .item:last-child { border-bottom: none; }
+
+  .item-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .item-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--texto);
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+  }
+
+  .item-desc {
+    font-size: 0.85rem;
+    color: var(--texto-suave);
+    line-height: 1.6;
+    font-weight: 300;
+    padding-left: 0;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .badge-veggie {
+    background: #e8f4ec;
+    color: #2d6b3c;
+    border: 1px solid #b8dcc3;
+  }
+  .badge-sin-tacc {
+    background: #fef3e2;
+    color: #7a4f0d;
+    border: 1px solid #f0cc88;
+  }
+  .badge-gluten {
+    background: #fff0f0;
+    color: #8b2222;
+    border: 1px solid #e8b4b4;
+  }
+
+  /* TABLAS GRID */
+  .tabla-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .tabla-card {
+    background: var(--blanco);
+    border: 1px solid var(--crema-oscura);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .tabla-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--verde);
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+
+  .tabla-card ul {
+    list-style: none;
+    font-size: 0.83rem;
+    color: var(--texto-suave);
+    line-height: 2;
+  }
+
+  .tabla-card ul li::before {
+    content: '— ';
+    color: var(--acento);
+  }
+
+  .tabla-nota {
+    margin-top: 1.5rem;
+    font-size: 0.78rem;
+    color: var(--texto-suave);
+    text-align: center;
+    font-style: italic;
+  }
+
+  /* MERIENDA CARDS */
+  .merienda-card {
+    background: var(--blanco);
+    border: 1px solid var(--crema-oscura);
+    border-radius: 4px;
+    padding: 1.35rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .merienda-card:last-of-type { margin-bottom: 0; }
+  .merienda-card h3 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--texto);
+    margin-bottom: 0.3rem;
+  }
+  .merienda-card p {
+    font-size: 0.83rem;
+    color: var(--texto-suave);
+    line-height: 1.6;
+  }
+
+  /* MEDIA PENSION */
+  .pension-block {
+    background: var(--verde);
+    color: #fff;
+    border-radius: 4px;
+    padding: 2rem 2rem 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+  .pension-block h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 1.2rem;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.03em;
+  }
+  .pension-block ul {
+    list-style: none;
+    font-size: 0.88rem;
+    line-height: 2;
+    color: rgba(255,255,255,0.78);
+    font-weight: 300;
+  }
+  .pension-block ul li::before {
+    content: '· ';
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* CAFETERIA GRID */
+  .cafe-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 520px) {
+    .cafe-grid { grid-template-columns: 1fr; }
+  }
+
+  .cafe-block h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--verde);
+    font-weight: 400;
+    margin-bottom: 1rem;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--verde);
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    padding: 3rem 2rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  footer strong {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #fff;
+    letter-spacing: 0.15em;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  /* MENU INFANTIL COLUMNS */
+  .infantil-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 2rem;
+  }
+  @media (max-width: 520px) {
+    .infantil-col { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 6rem 1.5rem 4rem; }
+    section { padding: 3.5rem 1.5rem; }
+    .tabla-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Eleton</div>
+    <button class="nav-btn" onclick="scrollTo('entradas')">Entradas</button>
+    <button class="nav-btn" onclick="scrollTo('tablas')">Tablas</button>
+    <button class="nav-btn" onclick="scrollTo('ensaladas')">Ensaladas</button>
+    <button class="nav-btn" onclick="scrollTo('sandwiches')">Sandwiches</button>
+    <button class="nav-btn" onclick="scrollTo('cortes')">Cortes</button>
+    <button class="nav-btn" onclick="scrollTo('pescados')">Pescados</button>
+    <button class="nav-btn" onclick="scrollTo('pastas')">Pastas</button>
+    <button class="nav-btn" onclick="scrollTo('infantil')">Infantil</button>
+    <button class="nav-btn" onclick="scrollTo('postres')">Postres</button>
+    <button class="nav-btn" onclick="scrollTo('meriendas')">Meriendas</button>
+    <button class="nav-btn" onclick="scrollTo('cafeteria')">Cafetería</button>
+    <button class="nav-btn" onclick="scrollTo('pension')">Media Pensión</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">Resto & Grill</p>
+  <h1>Eleton<br><em>Carta</em></h1>
+  <p class="hero-sub">Villa Carlos Paz</p>
+  <div class="hero-divider"></div>
+</div>
+
+<!-- ENTRADAS -->
+<section id="entradas">
+  <p class="section-tag">Para empezar</p>
+  <h2>Entradas</h2>
+
+  <div class="item">
+    <div class="item-header"><span class="item-name">Papas Fritas</span></div>
+    <p class="item-desc">Solas / Cheddar y verdeo / Bacon y huevo</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Rabas</span></div>
+    <p class="item-desc">Clásicas rabas apanadas al limón con Salsa Tártara, acompañadas de papas fritas</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Empanada criolla</span></div>
+    <p class="item-desc">Empanada criolla cortada a cuchillo, frita o al horno</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Empanada Veggie</span>
+      <span class="badge badge-veggie">Veggie</span>
+    </div>
+    <p class="item-desc">Empanada rellena de salteados de verduras a la plancha</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Tartare Veggie</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Timbal de palta con tomate y cebolla morada, integrada en salsa vinagreta cítrica y mostaza</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Provoleta</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Clásica provoleta a la plancha, acompañada de tomates cherrys asados y cebolla caramelizada</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- TABLAS -->
+<section id="tablas">
+  <p class="section-tag">Para compartir</p>
+  <h2>Tablas</h2>
+
+  <div class="tabla-grid">
+    <div class="tabla-card">
+      <h3>Tabla Clásica</h3>
+      <ul>
+        <li>Jamón cocido</li>
+        <li>Bondiola</li>
+        <li>Lomito de cerdo ahumado</li>
+        <li>Salame</li>
+        <li>Queso macerado en cubos</li>
+        <li>Queso azul</li>
+        <li>Cuñas de queso fontina</li>
+        <li>Escabeche de pollo y de berenjena</li>
+        <li>Lactonesa de la casa</li>
+        <li>Papas fritas y variedad de panificados</li>
+      </ul>
+    </div>
+    <div class="tabla-card">
+      <h3>Tabla Criolla</h3>
+      <ul>
+        <li>Salame de la Colonia</li>
+        <li>Cuñas de queso fontina</li>
+        <li>Olivas verdes</li>
+        <li>Cazuela de Chorizo con salsa criolla</li>
+        <li>Papas fritas</li>
+        <li>Empanada de carne cortada a cuchillo con yasgua norteña</li>
+        <li>Escabeche de pollo y de berenjena</li>
+        <li>Variedad de panificados</li>
+      </ul>
+    </div>
+    <div class="tabla-card">
+      <h3>Tabla Tex-Mex</h3>
+      <ul>
+        <li>Nachos con queso cheddar</li>
+        <li>Cazuela con guacamole salsa picante</li>
+        <li>Burritos de pollo con verduras asadas y arroz Yamani</li>
+        <li>Fautas de frijoles re-fritos con panceta ahumada y queso</li>
+        <li>Tacos de ternera braseada y verduras asadas</li>
+      </ul>
+    </div>
+  </div>
+  <p class="tabla-nota">* Todas acompañadas de dos latas de cerveza o gaseosa *</p>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ENSALADAS -->
+<section id="ensaladas">
+  <p class="section-tag">Frescas</p>
+  <h2>Ensaladas</h2>
+
+  <div class="item">
+    <div class="item-header"><span class="item-name">Ensalada Caesar</span></div>
+    <p class="item-desc">Base de lechuga, blanco de ave, crutones, queso sardo y aderezo Caesar de la casa</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Ensalada Mediterranea</span></div>
+    <p class="item-desc">Mix de verdes, tomates asados, mozarella, jamón crudo, aceitunas negras y pesto de albahaca</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Ensalada Eleton</span></div>
+    <p class="item-desc">Gajos de palta, cebolla morada, cherrys asadas, atún y huevo duro</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SANDWICHES Y MINUTAS -->
+<section id="sandwiches">
+  <p class="section-tag">Rápidos & sabrosos</p>
+  <h2>Sandwiches y Minutas</h2>
+
+  <div class="item">
+    <div class="item-header"><span class="item-name">Hamburguesa Eleton</span></div>
+    <p class="item-desc">Doble medallón de carne con aderezo de la casa, mermelada de Bacon y queso cheddar, acompañada de papas fritas</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Lomo Eleton</span></div>
+    <p class="item-desc">Bife de lomo 180gr, jamón cocido, queso tybo, lechuga, tomate y huevo frito en pan casero, acompañado de papas fritas</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Burrito Veggie</span>
+      <span class="badge badge-veggie">Veggie</span>
+    </div>
+    <p class="item-desc">Masa de wraps con vegetales asados y pasta de garbanzos, acompañado de mix de verdes y papas fritas</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Burrito de pollo</span></div>
+    <p class="item-desc">Masa de wraps con pollo braseado y vegetales asados, acompañado de mix de verdes y papas fritas</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Tostado</span></div>
+    <p class="item-desc">Tostado de miga de jamón cocido, queso tybo y lactonesa de la casa, acompañado de papas fritas</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Milanesa de ternera</span></div>
+    <p class="item-desc">Clásica milanesa de ternera, acompañada de papas fritas, puré o ensalada</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Suprema de pollo</span></div>
+    <p class="item-desc">Suprema de pollo, acompañadas de papas fritas, puré o ensalada</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CORTES -->
+<section id="cortes">
+  <p class="section-tag">A las brasas</p>
+  <h2>Cortes de carne de la casa</h2>
+
+  <div class="item">
+    <div class="item-header"><span class="item-name">Tomahawk</span></div>
+    <p class="item-desc">Corte de novillo de 900gr acompañado de mix de verdes y papas cuñas especiadas con clásico chimichurri y aderezo de la casa</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Bife de Chorizo</span></div>
+    <p class="item-desc">Bife de chorizo de 350gr en sal de romero y trío de hortalizas asadas</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Rib Eye</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Corte de selección de ojo de bife de 350gr sobre cremoso de papa con verdeo y panceta ahumada</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Bondiola de Cerdo</span></div>
+    <p class="item-desc">Corte de cerdo de 280gr sobre batata rústica y sutil baño de mostaza</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Pollo al Champignón</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Blanco de ave sobre medallones de papa al horno con un baño de crema al champignón</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Entrecot a la Riojana</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Corte de selección de 280gr sobre papas españolas y verduras a la riojana con huevo frito</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Filet Mignon</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">2 clásicos medallones de lomo de 150gr sobre risotto del bosque y reducción de vino tinto</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Roullette de pollo</span></div>
+    <p class="item-desc">Ave relleno con panceta ahumada, provolone y morrones ahumados, sobre vegetales al wok y reducción de aceto balsámico</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Ribs de cerdo a la BBQ</span></div>
+    <p class="item-desc">Costillas de cerdo con salsa barbacoa, acompañadas de cuñas de calabacín y batatas asadas</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PESCADOS -->
+<section id="pescados">
+  <p class="section-tag">Del mar</p>
+  <h2>Pescados</h2>
+
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Salmón Rosado</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Corte de salmón rosado de 260gr sobre gratinado de vegetales asados</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Trucha al limón</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Trucha salmonada acompañada de soufflé de espinaca y ligera salsa cítrica</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Filet de Merluza rebozado</span></div>
+    <p class="item-desc">Filet de merluza rebozado acompañado de papas cuñas y salsa tártara</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PASTAS -->
+<section id="pastas">
+  <p class="section-tag">Artesanales</p>
+  <h2>Pastas</h2>
+
+  <div class="item">
+    <div class="item-header"><span class="item-name">Tallarines al huevo</span></div>
+    <p class="item-desc">Con salsa fileto / blanca / mixta / bolognesa</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Ñoquis de papa / espinaca</span></div>
+    <p class="item-desc">Con salsa fileto / blanca / mixta / bolognesa</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Ravioles de carne y verduras</span></div>
+    <p class="item-desc">Con salsa fileto / blanca / mixta / bolognesa</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Sorrentinos de calabaza y mozarella</span></div>
+    <p class="item-desc">Con crema de panceta ahumada, verdeo y cherrys asados</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Sorrentinos de jamón y queso</span></div>
+    <p class="item-desc">Con salsa mediterránea a base de crema, cherry fresco, albahaca y olivas negras</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Sorrentinos de ojo de bife</span></div>
+    <p class="item-desc">Con salsa crema de hongos</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Tagliatelles con frutos di mare</span></div>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name" style="color:var(--verde-claro); font-style:italic;">Consultar opciones Sin TACC</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- MENÚ INFANTIL -->
+<section id="infantil">
+  <p class="section-tag">Para los más chicos</p>
+  <h2>Menú Infantil</h2>
+  <p style="font-size:0.82rem; color:var(--texto-suave); margin-bottom:1.5rem; font-style:italic;">* Incluye vaso de bebida y postre *</p>
+
+  <div class="item">
+    <div class="item-header"><span class="item-name">Milanesa de ternera</span></div>
+    <p class="item-desc">Con puré o papas smile</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Patitas de pollo</span></div>
+    <p class="item-desc">Con puré o papas smile</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Tallarines al huevo</span></div>
+    <p class="item-desc">Con salsa roja o crema</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- POSTRES -->
+<section id="postres">
+  <p class="section-tag">Para el final</p>
+  <h2>Postres</h2>
+
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Créme Brulée</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Clásica natilla cocida de vainilla bruleada</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Cremoso Marroc</span></div>
+    <p class="item-desc">Sobre brownie y ganache de Nutella</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Pavlova de peras al Malbec y salsa inglesa</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Merengue seco sobre salsa inglesa, rello de crema chantilly y peras al malbec con almendras garrapiñadas</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Cheesecake de chocolate blanco</span></div>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Tiramisú clásico</span></div>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Flan casero</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+    <p class="item-desc">Clásico flan casero con dulce de leche, crema chantilly o mixto</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Macedonia</span></div>
+    <p class="item-desc">Frutas de estación más bocha de helado</p>
+  </div>
+  <div class="item">
+    <div class="item-header"><span class="item-name">Copa de helado</span></div>
+    <p class="item-desc">Dulce de leche, chocolate, americana, frutilla o limón</p>
+  </div>
+  <div class="item">
+    <div class="item-header">
+      <span class="item-name">Ensalada de frutas</span>
+      <span class="badge badge-gluten">Sin TACC</span>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- MERIENDAS -->
+<section id="meriendas">
+  <p class="section-tag">Tarde</p>
+  <h2>Meriendas</h2>
+
+  <div class="merienda-card">
+    <h3>Merienda Completa</h3>
+    <p>Infusión acompañada de 4 tostadas (pan blanca/negro), jamón, queso, mermelada y queso crema</p>
+  </div>
+  <div class="merienda-card">
+    <h3>Merienda Clásica</h3>
+    <p>Infusión acompañada de 2 minis tostadas, 2 tostadas de pan inglés, mermelada y queso crema o manteca y dulce de leche</p>
+  </div>
+  <div class="merienda-card">
+    <h3>Merienda Delicia</h3>
+    <p>Infusión acompañada de devils cake / cheesecake de dulce de leche / pastafrola de batata o membrillo / balcarce</p>
+  </div>
+  <div class="merienda-card">
+    <h3>Merienda Saludable</h3>
+    <p>Yogurt más granola y sección de frutas, 2 tostadas de pan negro, mermelada casera, queso crema y jugo de naranja</p>
+  </div>
+  <div class="merienda-card">
+    <h3>Merienda Protéica</h3>
+    <p>Jugo de naranja o pomelo, acompañada de láminas de palta sobre pan de campo, huevo revuelto y queso crema</p>
+  </div>
+  <div class="merienda-card">
+    <h3>Merienda Buffet</h3>
+    <p>Consultar por información</p>
+  </div>
+
+  <div style="margin-top:1.5rem; padding: 1rem 1.25rem; background: #e8f4ec; border-radius:4px; border-left: 3px solid #2d5a3d;">
+    <p style="font-size:0.83rem; color:#1f4a2d; font-weight:400;">
+      <strong style="font-weight:500;">Opción Sin TACC disponible</strong> · Opciones 1, 2 y 4 pueden ser intercambiadas por voucher de Spa
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CAFETERÍA -->
+<section id="cafeteria">
+  <p class="section-tag">Todo el día</p>
+  <h2>Cafetería & Panificados</h2>
+
+  <div class="cafe-grid">
+    <div class="cafe-block">
+      <h3>Cafetería</h3>
+      <div class="item" style="border-color:var(--crema-oscura)">
+        <div class="item-name" style="font-size:0.9rem;">Té</div>
+        <div class="item-desc">Consultar variedades</div>
+      </div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Café chico</div><div class="item-desc">Cortado / con leche / lágrima</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Café en jarro</div><div class="item-desc">Cortado / con leche / lágrima</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Café doble</div><div class="item-desc">Cortado / con leche / lágrima</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Café moca</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Matcha Latte</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Café con Baileys</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Capuccino</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Frapuccino</div><div class="item-desc">Chocolate / caramelo / granizado</div></div>
+    </div>
+    <div class="cafe-block">
+      <h3>Panificados</h3>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Devils Cake</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Balcarce</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Brownie</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Pasta Frola</div><div class="item-desc">Individual membrillo / batata</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Chocotorta</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Medialuna</div></div>
+      <div class="item"><div class="item-name" style="font-size:0.9rem;">Criollo</div></div>
+      <div class="item">
+        <div class="item-header" style="margin:0">
+          <span class="item-name" style="font-size:0.82rem; color:var(--texto-suave); font-style:italic;">Consultar opciones Sin TACC</span>
+          <span class="badge badge-gluten">Sin TACC</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- MEDIA PENSION -->
+<section id="pension">
+  <p class="section-tag">Servicio especial</p>
+  <h2>Media Pensión</h2>
+
+  <div class="pension-block">
+    <h3>Appetizer</h3>
+    <ul>
+      <li>Entrada / aperitivo individual del día <span style="font-size:0.75rem; opacity:0.6; margin-left:4px;">Sin TACC</span></li>
+    </ul>
+  </div>
+
+  <div class="pension-block">
+    <h3>Principales</h3>
+    <ul>
+      <li>Blanco de ave al Champignón con puré de papa <span style="font-size:0.75rem; opacity:0.6; margin-left:4px;">Sin TACC</span></li>
+      <li>Bondiola de cerdo a la Mostaza con batatas rústicas</li>
+      <li>Entrecot a la Riojana con papas a la española <span style="font-size:0.75rem; opacity:0.6; margin-left:4px;">Sin TACC</span></li>
+      <li>Sorrentinos de calabaza y muzzarela con salsa a elección (fileto, crema o mixta)</li>
+      <li>Ñoquis de espinaca con salsa a elección (fileto, crema o mixta)</li>
+      <li>Burrito de verduras y pasta de garbanzos con papas fritas y mix de verdes <span style="font-size:0.75rem; opacity:0.6; margin-left:4px;">Veggie</span></li>
+      <li>Tartín de vegetales y queso acompañado de ensalada de verdes, tomate y cebolla <span style="font-size:0.75rem; opacity:0.6; margin-left:4px;">Veggie</span></li>
+      <li>Salteado oriental (wok de vegetales, arroz y blanco de ave con opción de salsa de soja y mix de semillas)</li>
+      <li>Milanesa de ternera o suprema (sola o napolitana) con guarnición a elección (papas fritas, puré, ensalada o vegetales grillados)</li>
+      <li>Ternera braseada con guarnición a elección (papas fritas, puré, ensalada o vegetales grillados)</li>
+    </ul>
+  </div>
+
+  <div class="pension-block">
+    <h3>Postres</h3>
+    <ul>
+      <li>Flan casero <span style="font-size:0.75rem; opacity:0.6; margin-left:4px;">Sin TACC</span></li>
+      <li>Brownie con helado</li>
+      <li>Ensalada de frutas <span style="font-size:0.75rem; opacity:0.6; margin-left:4px;">Sin TACC</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>ELETON</strong>
+  Resto & Grill · Villa Carlos Paz
+</footer>
+
+<script>
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const navH = document.querySelector('nav').offsetHeight;
+    const top = el.getBoundingClientRect().top + window.scrollY - navH - 16;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+
+  // Intersection Observer para animaciones
+  const sections = document.querySelectorAll('section');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.08 });
+  sections.forEach(s => obs.observe(s));
+
+  // Active nav highlight
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const sectionIds = ['entradas','tablas','ensaladas','sandwiches','cortes','pescados','pastas','infantil','postres','meriendas','cafeteria','pension'];
+
+  window.addEventListener('scroll', () => {
+    const navH = document.querySelector('nav').offsetHeight;
+    let current = '';
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.getBoundingClientRect().top <= navH + 80) current = id;
+    });
+    navBtns.forEach((btn, i) => {
+      btn.classList.toggle('active', sectionIds[i] === current);
+    });
+  }, { passive: true });
+</script>
+</body>
+</html>
