@@ -38,6 +38,7 @@
     background: var(--verde);
     padding: 0;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
@@ -48,21 +49,20 @@
     align-items: center;
     gap: 0;
     min-width: max-content;
-    padding: 0 1.5rem;
+    padding: 0 1rem;
   }
 
   .nav-logo {
     font-family: 'Playfair Display', serif;
     color: #fff;
-    font-size: 1.1rem;
+    font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.12em;
-    padding: 1rem 1.5rem 1rem 0;
+    padding: 0.9rem 1.2rem 0.9rem 0;
     border-right: 1px solid rgba(255,255,255,0.2);
-    margin-right: 1rem;
+    margin-right: 0.8rem;
     white-space: nowrap;
     text-transform: uppercase;
-    font-size: 0.85rem;
   }
 
   .nav-btn {
@@ -72,22 +72,24 @@
     font-family: 'Jost', sans-serif;
     font-size: 0.78rem;
     font-weight: 400;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    padding: 1rem 1.1rem;
+    padding: 0.9rem 0.9rem;
     cursor: pointer;
     white-space: nowrap;
     transition: color 0.2s, background 0.2s;
     position: relative;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  .nav-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  .nav-btn:hover, .nav-btn:active { color: #fff; background: rgba(255,255,255,0.08); }
   .nav-btn.active { color: #fff; }
   .nav-btn.active::after {
     content: '';
     position: absolute;
     bottom: 0;
-    left: 1.1rem;
-    right: 1.1rem;
+    left: 0.9rem;
+    right: 0.9rem;
     height: 2px;
     background: rgba(255,255,255,0.6);
   }
@@ -149,7 +151,7 @@
 
   /* SECTIONS */
   section {
-    padding: 5rem 2rem;
+    padding: 4rem 1.25rem;
     max-width: 760px;
     margin: 0 auto;
     opacity: 0;
@@ -386,9 +388,20 @@
   }
 
   @media (max-width: 600px) {
-    .hero { padding: 6rem 1.5rem 4rem; }
-    section { padding: 3.5rem 1.5rem; }
+    .hero { padding: 5.5rem 1.25rem 3.5rem; }
+    .hero h1 { font-size: 2.6rem; }
+    section { padding: 3rem 1.25rem; }
     .tabla-grid { grid-template-columns: 1fr; }
+    .cafe-grid { grid-template-columns: 1fr; }
+    .pension-block { padding: 1.5rem 1.25rem; }
+    .item-name { font-size: 0.95rem; }
+    .item-desc { font-size: 0.82rem; }
+    h2 { font-size: 1.9rem; margin-bottom: 1.8rem; }
+    .merienda-card { padding: 1.1rem 1.1rem; }
+    .tabla-card { padding: 1.1rem; }
+    .tabla-nota { font-size: 0.75rem; }
+    .pension-block ul { font-size: 0.84rem; line-height: 1.9; }
+    .cafe-block .item { padding: 0.9rem 0; }
   }
 </style>
 </head>
@@ -398,18 +411,18 @@
 <nav>
   <div class="nav-inner">
     <div class="nav-logo">Eleton</div>
-    <button class="nav-btn" onclick="scrollTo('entradas')">Entradas</button>
-    <button class="nav-btn" onclick="scrollTo('tablas')">Tablas</button>
-    <button class="nav-btn" onclick="scrollTo('ensaladas')">Ensaladas</button>
-    <button class="nav-btn" onclick="scrollTo('sandwiches')">Sandwiches</button>
-    <button class="nav-btn" onclick="scrollTo('cortes')">Cortes</button>
-    <button class="nav-btn" onclick="scrollTo('pescados')">Pescados</button>
-    <button class="nav-btn" onclick="scrollTo('pastas')">Pastas</button>
-    <button class="nav-btn" onclick="scrollTo('infantil')">Infantil</button>
-    <button class="nav-btn" onclick="scrollTo('postres')">Postres</button>
-    <button class="nav-btn" onclick="scrollTo('meriendas')">Meriendas</button>
-    <button class="nav-btn" onclick="scrollTo('cafeteria')">Cafetería</button>
-    <button class="nav-btn" onclick="scrollTo('pension')">Media Pensión</button>
+    <button class="nav-btn" onclick="irA('entradas')">Entradas</button>
+    <button class="nav-btn" onclick="irA('tablas')">Tablas</button>
+    <button class="nav-btn" onclick="irA('ensaladas')">Ensaladas</button>
+    <button class="nav-btn" onclick="irA('sandwiches')">Sandwiches</button>
+    <button class="nav-btn" onclick="irA('cortes')">Cortes</button>
+    <button class="nav-btn" onclick="irA('pescados')">Pescados</button>
+    <button class="nav-btn" onclick="irA('pastas')">Pastas</button>
+    <button class="nav-btn" onclick="irA('infantil')">Infantil</button>
+    <button class="nav-btn" onclick="irA('postres')">Postres</button>
+    <button class="nav-btn" onclick="irA('meriendas')">Meriendas</button>
+    <button class="nav-btn" onclick="irA('cafeteria')">Cafetería</button>
+    <button class="nav-btn" onclick="irA('pension')">Media Pensión</button>
   </div>
 </nav>
 
@@ -902,12 +915,12 @@
 </footer>
 
 <script>
-  function scrollTo(id) {
+  function irA(id) {
     const el = document.getElementById(id);
     if (!el) return;
     const navH = document.querySelector('nav').offsetHeight;
     const top = el.getBoundingClientRect().top + window.scrollY - navH - 16;
-    window.scrollTo({ top, behavior: 'smooth' });
+    window.scroll({ top, behavior: 'smooth' });
   }
 
   // Intersection Observer para animaciones
