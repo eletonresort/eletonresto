@@ -967,8 +967,7 @@
   }, { passive: true });
 
   // ── PRECIOS DESDE GOOGLE SHEETS ─────────────────────────
-  const SHEET_ID = '1NUkFvtUnagwh7uy7gPOQkjPPW61X1rxDZr9cQyXFwRQ';
-  const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1638006081`;
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRSzHvF5uc9HTZHma5GEmcEDYtEyZPtpT6JZRGjDfeH6rpy1YnF2JR5s1JMw8Xn0skJ5HEKVIbONbZH/pub?gid=1638006081&single=true&output=csv';
 
   function normalizarNombre(str) {
     return str.toLowerCase()
