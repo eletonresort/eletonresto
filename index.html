@@ -344,6 +344,27 @@
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
   }
+  /* PRECIO TAG */
+  .precio-tag {
+    display: inline-block;
+    margin-left: 0.6rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--verde);
+    background: #e8f4ec;
+    border: 1px solid #b8dcc3;
+    border-radius: 20px;
+    padding: 1px 10px;
+    letter-spacing: 0.01em;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .merienda-card h3 .precio-tag,
+  .tabla-card h3 .precio-tag {
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
   @media (max-width: 520px) {
     .cafe-grid { grid-template-columns: 1fr; }
   }
@@ -915,6 +936,7 @@
 </footer>
 
 <script>
+  // ── SCROLL ──────────────────────────────────────────────
   function irA(id) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -923,19 +945,16 @@
     window.scroll({ top, behavior: 'smooth' });
   }
 
-  // Intersection Observer para animaciones
+  // ── ANIMACIONES ─────────────────────────────────────────
   const sections = document.querySelectorAll('section');
   const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('visible');
-    });
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08 });
   sections.forEach(s => obs.observe(s));
 
-  // Active nav highlight
+  // ── NAV ACTIVO ──────────────────────────────────────────
   const navBtns = document.querySelectorAll('.nav-btn');
   const sectionIds = ['entradas','tablas','ensaladas','sandwiches','cortes','pescados','pastas','infantil','postres','meriendas','cafeteria','pension'];
-
   window.addEventListener('scroll', () => {
     const navH = document.querySelector('nav').offsetHeight;
     let current = '';
@@ -944,10 +963,90 @@
       if (!el) return;
       if (el.getBoundingClientRect().top <= navH + 80) current = id;
     });
-    navBtns.forEach((btn, i) => {
-      btn.classList.toggle('active', sectionIds[i] === current);
-    });
+    navBtns.forEach((btn, i) => btn.classList.toggle('active', sectionIds[i] === current));
   }, { passive: true });
+
+  // ── PRECIOS DESDE GOOGLE SHEETS ─────────────────────────
+  const SHEET_ID = '1OGKlKK_kS-3OqoQgLLbPQj7yHgLugWG3';
+  const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1638006081`;
+
+  function normalizarNombre(str) {
+    return str.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '');
+  }
+
+  function formatearPrecio(valor) {
+    const n = parseInt(valor.toString().replace(/[^0-9]/g, ''));
+    if (isNaN(n) || n === 0) return null;
+    return '$\u00a0' + n.toLocaleString('es-AR');
+  }
+
+  function inyectarPrecios(csv) {
+    const lineas = csv.trim().split('\n');
+    const precios = {};
+    // Fila 0 = encabezado, fila 1 = instrucción, desde fila 2 = datos
+    for (let i = 2; i < lineas.length; i++) {
+      const cols = lineas[i].split(',');
+      if (cols.length < 5) continue;
+      const nombre  = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : '';
+      const precioRaw = cols[4] ? cols[4].replace(/^"|"$/g, '').trim() : '';
+      if (!nombre || !precioRaw) continue;
+      const key = normalizarNombre(nombre);
+      const precio = formatearPrecio(precioRaw);
+      if (precio) precios[key] = precio;
+    }
+
+    // Inyectar en todos los .item-name
+    document.querySelectorAll('.item-name').forEach(el => {
+      const key = normalizarNombre(el.textContent.trim());
+      if (precios[key]) {
+        // Evitar duplicar si ya fue inyectado
+        if (el.querySelector('.precio-tag')) return;
+        const tag = document.createElement('span');
+        tag.className = 'precio-tag';
+        tag.textContent = precios[key];
+        el.appendChild(tag);
+      }
+    });
+
+    // Inyectar en merienda-cards (h3)
+    document.querySelectorAll('.merienda-card h3').forEach(el => {
+      const key = normalizarNombre(el.textContent.trim());
+      if (precios[key]) {
+        if (el.querySelector('.precio-tag')) return;
+        const tag = document.createElement('span');
+        tag.className = 'precio-tag';
+        tag.textContent = precios[key];
+        el.appendChild(tag);
+      }
+    });
+
+    // Inyectar en tablas (h3)
+    document.querySelectorAll('.tabla-card h3').forEach(el => {
+      const key = normalizarNombre(el.textContent.trim());
+      if (precios[key]) {
+        if (el.querySelector('.precio-tag')) return;
+        const tag = document.createElement('span');
+        tag.className = 'precio-tag';
+        tag.textContent = precios[key];
+        el.appendChild(tag);
+      }
+    });
+  }
+
+  async function cargarPrecios() {
+    try {
+      const res = await fetch(CSV_URL);
+      if (!res.ok) return;
+      const csv = await res.text();
+      inyectarPrecios(csv);
+    } catch(e) {
+      // Sin precios disponibles, la carta igual funciona
+    }
+  }
+
+  cargarPrecios();
 </script>
 </body>
 </html>
