@@ -981,14 +981,39 @@
     return '$\u00a0' + n.toLocaleString('es-AR');
   }
 
-  function inyectarPrecios(csv) {
+  function parsearCSV(csv) {
+    // Parser robusto que maneja campos entre comillas con comas adentro
+    const filas = [];
     const lineas = csv.trim().split('\n');
+    for (const linea of lineas) {
+      const cols = [];
+      let actual = '';
+      let dentroComillas = false;
+      for (let i = 0; i < linea.length; i++) {
+        const c = linea[i];
+        if (c === '"') {
+          dentroComillas = !dentroComillas;
+        } else if (c === ',' && !dentroComillas) {
+          cols.push(actual.trim());
+          actual = '';
+        } else {
+          actual += c;
+        }
+      }
+      cols.push(actual.trim());
+      filas.push(cols);
+    }
+    return filas;
+  }
+
+  function inyectarPrecios(csv) {
+    const filas = parsearCSV(csv);
     const precios = {};
     // Fila 0 = encabezado, fila 1 = instrucción, desde fila 2 = datos
-    for (let i = 2; i < lineas.length; i++) {
-      const cols = lineas[i].split(',');
+    for (let i = 2; i < filas.length; i++) {
+      const cols = filas[i];
       if (cols.length < 5) continue;
-      const nombre  = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : '';
+      const nombre    = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : '';
       const precioRaw = cols[4] ? cols[4].replace(/^"|"$/g, '').trim() : '';
       if (!nombre || !precioRaw) continue;
       const key = normalizarNombre(nombre);
