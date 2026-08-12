@@ -159,6 +159,91 @@
     .item-nombre { font-size:0.92rem; }
     .seccion h2 { font-size:1.8rem; margin-bottom:1.5rem; }
   }
+
+  /* MENÚ EJECUTIVO y MENÚ ELETON - presentación especial */
+  .menu-especial-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 1.4rem;
+    background: var(--oscuro);
+    border-radius: 6px;
+    color: #fff;
+  }
+  .menu-especial-header-left {}
+  .menu-especial-precio-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 0.25rem;
+  }
+  .menu-especial-precio {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--dorado);
+    line-height: 1;
+  }
+  .menu-especial-nota-inline {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 0.4rem;
+    font-style: italic;
+  }
+  .menu-especial-badge {
+    background: rgba(184,146,90,0.2);
+    border: 1px solid rgba(184,146,90,0.4);
+    border-radius: 4px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dorado);
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  .menu-especial-items {
+    border: 1px solid var(--crema-oscura);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+  .menu-especial-items .subseccion-titulo {
+    background: var(--crema-oscura);
+    margin: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.65rem;
+    border-bottom: none;
+  }
+  .menu-especial-items .item {
+    border-bottom: 1px solid var(--crema-oscura);
+    padding: 0.9rem 1rem;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .menu-especial-items .item:last-child { border-bottom: none; }
+  .menu-especial-items .item::before {
+    content: '·';
+    color: var(--dorado);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .menu-especial-items .item-header { margin-bottom: 0; flex-wrap: nowrap; }
+  .menu-especial-items .item-nombre { font-size: 0.9rem; font-weight: 400; }
+  .menu-especial-items .item-desc {
+    font-size: 0.78rem;
+    color: var(--texto-suave);
+    margin-top: 0.15rem;
+    padding-left: 0;
+  }
+  .menu-especial-items .item-precio { display: none; }
+
 </style>
 </head>
 <body>
@@ -399,7 +484,7 @@
 
   // Títulos y etiquetas de cada sección
   const SECCION_INFO = {
-    ejecutivo: { tag:'Almuerzo', titulo:'Menú Ejecutivo', nota:'2 pasos · No incluye bebida' },
+    ejecutivo: { tag:'Almuerzo', titulo:'Menú Ejecutivo' },
     entradas:  { tag:'Para empezar', titulo:'Entradas' },
     ensaladas: { tag:'Frescas', titulo:'Ensaladas' },
     cortes:    { tag:'A las brasas', titulo:'Cortes de carne' },
@@ -411,7 +496,7 @@
     meriendas: { tag:'Tarde', titulo:'Meriendas' },
     cafeteria: { tag:'Todo el día', titulo:'Cafetería' },
     pasteleria:{ tag:'Pastelería', titulo:'Pastelería' },
-    pension:   { tag:'Media Pensión', titulo:'Menú Eleton', nota:'3 pasos · Válido para media pensión · No incluye bebida' },
+    pension:   { tag:'Media Pensión', titulo:'Menú Eleton' },
     bebidas:   { tag:'Sin alcohol', titulo:'Bebidas' },
     cervezas:  { tag:'Tirada & en botella', titulo:'Cervezas' },
     cocteleria:{ tag:'Barra', titulo:'Coctelería' },
@@ -451,7 +536,9 @@
       // Para vinos, guardar bodega original
       const bodega = secId==='vinos' ? (cols[0]||'').trim() : null;
 
-      secciones[secId].push({nombre,desc,badge,precio:limpiarPrecio(precioRaw),bodega});
+      const tipoEjecutivo = secId==='ejecutivo' ? secRaw : null;
+      const tipoPension = secId==='pension' ? (nombre.toLowerCase().includes('postre') ? 'postre' : 'pension') : null;
+      secciones[secId].push({nombre,desc,badge,precio:limpiarPrecio(precioRaw),bodega,tipoEjecutivo,tipoPension});
     }
 
     // Construir HTML
@@ -489,13 +576,49 @@
           inner+=itemHTML(item);
         });
       } else if(secId==='ejecutivo'){
-        // Separar principal y postre
-        const principales=items.filter(i=>i.secRaw!=='postre');
-        const postres=items.filter(i=>i.secRaw==='postre');
-        inner+=`<div class="subseccion-titulo">Principal</div>`;
-        items.filter((_,i)=>i<items.length-3).forEach(item=>{ inner+=itemHTML(item); });
-        inner+=`<div class="subseccion-titulo">Postre</div>`;
-        items.slice(-3).forEach(item=>{ inner+=itemHTML(item); });
+        // Precio del menú = primer item que tenga precio
+        const precioMenu=items.find(i=>i.precio)?.precio||'';
+        inner+=`<div class="menu-especial-header">
+          <div class="menu-especial-header-left">
+            <div class="menu-especial-precio-label">Precio por persona</div>
+            <div class="menu-especial-precio">${precioMenu}</div>
+            <div class="menu-especial-nota-inline">Elegís un principal + postre</div>
+          </div>
+          <div class="menu-especial-badge">Menú 2 pasos</div>
+        </div>`;
+        // Separar principales y postres por tipo de sección original
+        const principales=items.filter(i=>i.tipoEjecutivo==='principal');
+        const postres=items.filter(i=>i.tipoEjecutivo==='postre');
+        inner+=`<div class="menu-especial-items">`;
+        inner+=`<div class="subseccion-titulo">Principal — elegí uno</div>`;
+        principales.forEach(item=>{ inner+=itemHTML(item); });
+        inner+=`<div class="subseccion-titulo">Postre — elegí uno</div>`;
+        postres.forEach(item=>{ inner+=itemHTML(item); });
+        inner+=`</div>`;
+      } else if(secId==='pension'){
+        // Precio del menú Eleton
+        const precioMenu=items.find(i=>i.precio)?.precio||'';
+        inner+=`<div class="menu-especial-header">
+          <div class="menu-especial-header-left">
+            <div class="menu-especial-precio-label">Precio por persona</div>
+            <div class="menu-especial-precio">${precioMenu}</div>
+            <div class="menu-especial-nota-inline">Appetizer + principal + postre</div>
+          </div>
+          <div class="menu-especial-badge">Menú 3 pasos</div>
+        </div>`;
+        // Separar por tipo
+        const principales=items.filter(i=>i.tipoPension==='pension');
+        const postres=items.filter(i=>i.tipoPension==='postre');
+        inner+=`<div class="menu-especial-items">`;
+        if(principales.length){
+          inner+=`<div class="subseccion-titulo">Principal — elegí uno</div>`;
+          principales.forEach(item=>{ inner+=itemHTML(item); });
+        }
+        if(postres.length){
+          inner+=`<div class="subseccion-titulo">Postre — elegí uno</div>`;
+          postres.forEach(item=>{ inner+=itemHTML(item); });
+        }
+        inner+=`</div>`;
       } else {
         items.forEach(item=>{ inner+=itemHTML(item); });
       }
