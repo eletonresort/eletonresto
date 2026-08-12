@@ -234,13 +234,15 @@
     font-size: 1.1rem;
     flex-shrink: 0;
   }
-  .menu-especial-items .item-header { margin-bottom: 0; flex-wrap: nowrap; }
-  .menu-especial-items .item-nombre { font-size: 0.9rem; font-weight: 400; }
+  .menu-especial-items .item-header { margin-bottom: 0.2rem; flex-wrap: nowrap; align-items: center; }
+  .menu-especial-items .item-nombre { font-size: 0.9rem; font-weight: 400; flex: 1; }
+  .menu-especial-items .badge { margin-left: auto; flex-shrink: 0; }
   .menu-especial-items .item-desc {
     font-size: 0.78rem;
     color: var(--texto-suave);
     margin-top: 0.15rem;
     padding-left: 0;
+    line-height: 1.5;
   }
   .menu-especial-items .item-precio { display: none; }
 
@@ -473,7 +475,7 @@
     'cafeteria':'cafeteria','pasteleria':'pasteleria',
     'pension':'pension',
     'coca-cola':'bebidas','s/alcohol':'bebidas',
-    'cervezas':'cervezas','cocteleria ':'cocteleria','cocteleria':'cocteleria',
+    'cervezas':'cervezas',' cervezas':'cervezas','cocteleria ':'cocteleria','cocteleria':'cocteleria',
     'medida':'whisky','champagnes':'champagnes','espumantes':'espumantes',
     'viña las perdices':'vinos','terraza de los andes':'vinos',
     'fabre montmayou':'vinos','nieto senetiner':'vinos',
@@ -487,16 +489,16 @@
     ejecutivo: { tag:'Almuerzo', titulo:'Menú Ejecutivo' },
     entradas:  { tag:'Para empezar', titulo:'Entradas' },
     ensaladas: { tag:'Frescas', titulo:'Ensaladas' },
-    cortes:    { tag:'A las brasas', titulo:'Cortes de carne' },
-    pescados:  { tag:'Del mar', titulo:'Pescados' },
+    cortes:    { tag:'Al Grill', titulo:'Cortes de carne' },
+    pescados:  { tag:'De mar / río', titulo:'Pescados' },
     pastas:    { tag:'Artesanales', titulo:'Pastas' },
     sandwiches:{ tag:'Rápidos & sabrosos', titulo:'Sandwiches y Minutas' },
     infantil:  { tag:'Para los chicos', titulo:'Menú Infantil', nota:'No incluye bebida' },
     postres:   { tag:'Para el final', titulo:'Postres' },
     meriendas: { tag:'Tarde', titulo:'Meriendas' },
     cafeteria: { tag:'Todo el día', titulo:'Cafetería' },
-    pasteleria:{ tag:'Pastelería', titulo:'Pastelería' },
-    pension:   { tag:'Media Pensión', titulo:'Menú Eleton' },
+    pasteleria:{ tag:'Delicias artesanales', titulo:'Pastelería' },
+    pension:   { tag:'Almuerzo / Cena (Media Pensión)', titulo:'Menú Eleton' },
     bebidas:   { tag:'Sin alcohol', titulo:'Bebidas' },
     cervezas:  { tag:'Tirada & en botella', titulo:'Cervezas' },
     cocteleria:{ tag:'Barra', titulo:'Coctelería' },
@@ -514,14 +516,19 @@
     // Para vinos guardamos también la bodega como subsección
     const vinos_bodegas={};
 
+    let ultimaSeccion='';
     for(let i=2;i<filas.length;i++){
       const cols=filas[i];
       if(cols.length<2) continue;
-      const secRaw=(cols[0]||'').trim().toLowerCase();
+      let secRaw=(cols[0]||'').trim().toLowerCase();
       const nombre=(cols[1]||'').trim();
       const desc=(cols[2]||'').trim();
       const badge=(cols[3]||'').trim();
       const precioRaw=(cols[4]||'').trim();
+
+      // Si la sección está vacía, heredar la última sección conocida
+      if(!secRaw && nombre) secRaw = ultimaSeccion;
+      if(secRaw) ultimaSeccion = secRaw;
 
       if(!secRaw||!nombre) continue;
       // Saltar filas de encabezado/separador
