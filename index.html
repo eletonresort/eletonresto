@@ -436,17 +436,20 @@
   // ── CSV PARSER ────────────────────────────────────────────
   function parsearCSV(csv){
     const filas=[];
-    for(const linea of csv.trim().split('\n')){
-      const cols=[]; let actual=''; let enComillas=false;
-      for(let i=0;i<linea.length;i++){
-        const c=linea[i];
-        if(c==='"'){ enComillas=!enComillas; }
-        else if(c===','&&!enComillas){ cols.push(actual.trim()); actual=''; }
-        else{ actual+=c; }
-      }
-      cols.push(actual.trim());
-      filas.push(cols);
+    // Parser robusto: maneja campos con saltos de línea dentro de comillas
+    let actual=''; let enComillas=false; let cols=[];
+    for(let i=0;i<csv.length;i++){
+      const c=csv[i];
+      if(c==='"'){ enComillas=!enComillas; }
+      else if(c===','&&!enComillas){ cols.push(actual.trim()); actual=''; }
+      else if((c==='\n'||c==='\r')&&!enComillas){
+        if(c==='\r'&&csv[i+1]==='\n') i++; // CRLF
+        cols.push(actual.trim());
+        filas.push(cols);
+        cols=[]; actual='';
+      } else { actual+=c; }
     }
+    if(actual||cols.length) { cols.push(actual.trim()); filas.push(cols); }
     return filas;
   }
 
@@ -474,7 +477,7 @@
     'postres':'postres','meriendas':'meriendas',
     'cafeteria':'cafeteria','pasteleria':'pasteleria',
     'pension':'pension',
-    'coca-cola':'bebidas','s/alcohol':'bebidas',
+    'infantil':'infantil',' infantil':'infantil',
     'cervezas':'cervezas',' cervezas':'cervezas','cocteleria ':'cocteleria','cocteleria':'cocteleria',
     'medida':'whisky','champagnes':'champagnes','espumantes':'espumantes',
     'viña las perdices':'vinos','terraza de los andes':'vinos',
@@ -493,7 +496,7 @@
     pescados:  { tag:'De mar / río', titulo:'Pescados' },
     pastas:    { tag:'Artesanales', titulo:'Pastas' },
     sandwiches:{ tag:'Rápidos & sabrosos', titulo:'Sandwiches y Minutas' },
-    infantil:  { tag:'Para los chicos', titulo:'Menú Infantil', nota:'No incluye bebida' },
+    infantil:  { tag:'Para los chicos 👶', titulo:'Menú Infantil' },
     postres:   { tag:'Para el final', titulo:'Postres' },
     meriendas: { tag:'Tarde', titulo:'Meriendas' },
     cafeteria: { tag:'Todo el día', titulo:'Cafetería' },
@@ -545,7 +548,8 @@
 
       const tipoEjecutivo = secId==='ejecutivo' ? secRaw : null;
       const tipoPension = secId==='pension' ? (nombre.toLowerCase().includes('postre') ? 'postre' : 'pension') : null;
-      secciones[secId].push({nombre,desc,badge,precio:limpiarPrecio(precioRaw),bodega,tipoEjecutivo,tipoPension});
+      const tipoInfantil = secId==='infantil' ? (nombre.toLowerCase().includes('helado') || nombre.toLowerCase().includes('postre') ? 'postre' : 'principal') : null;
+      secciones[secId].push({nombre,desc,badge,precio:limpiarPrecio(precioRaw),bodega,tipoEjecutivo,tipoPension,tipoInfantil});
     }
 
     // Construir HTML
@@ -625,6 +629,24 @@
           inner+=`<div class="subseccion-titulo">Postre — elegí uno</div>`;
           postres.forEach(item=>{ inner+=itemHTML(item); });
         }
+        inner+=`</div>`;
+      } else if(secId==='infantil'){
+        const precioMenu=items.find(i=>i.precio)?.precio||'';
+        inner+=`<div class="menu-especial-header">
+          <div class="menu-especial-header-left">
+            <div class="menu-especial-precio-label">Precio por persona</div>
+            <div class="menu-especial-precio">${precioMenu}</div>
+            <div class="menu-especial-nota-inline">Principal + postre · No incluye bebida</div>
+          </div>
+          <div class="menu-especial-badge" style="font-size:1rem; letter-spacing:0;">🧒 Menú Infantil</div>
+        </div>`;
+        const principales=items.filter(i=>i.tipoInfantil==='principal');
+        const postres=items.filter(i=>i.tipoInfantil==='postre');
+        inner+=`<div class="menu-especial-items">`;
+        inner+=`<div class="subseccion-titulo">Principal — elegí uno</div>`;
+        principales.forEach(item=>{ inner+=itemHTML(item); });
+        inner+=`<div class="subseccion-titulo">Postre incluido</div>`;
+        postres.forEach(item=>{ inner+=itemHTML(item); });
         inner+=`</div>`;
       } else {
         items.forEach(item=>{ inner+=itemHTML(item); });
